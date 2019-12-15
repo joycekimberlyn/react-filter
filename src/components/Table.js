@@ -3,7 +3,7 @@ import React from "react";
 const Table = ({ title, posts }) => (
   <div>
     <h4 className="text-uppercase">{title}</h4>
-    <table class="table table-dark">
+    <table className="table table-dark">
       <thead>
         <tr>
           <th>userId</th>
@@ -15,7 +15,7 @@ const Table = ({ title, posts }) => (
       <tbody>
         {posts &&
           posts.map(post => (
-            <tr>
+            <tr key={post.login.uuid}>
               <td>{post.id.name}</td>
               <td>{post.phone}</td>
               <td>{post.name.first}</td>

@@ -1,71 +1,49 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Table from "./components/Table";
 
-
 function App() {
 
-  const [itemsToShowList, setItemToShowList] = useState([10, 20, 30]);
-  const [allPosts, setAllPosts] = useState(false);
-  let [page, setPage] = useState(1);
-  let [numToShow, setNumToShow] = useState(10);
+    // ito yung mga ipapakita sa select options, pipili siya kung ilan gusto niya ipakita
+    const filterItems = [10, 20, 30];
+    // ito yung value kung ilan yung gusto niyang ipakita, bali pag sinelect niya 20, dito mapupunta
+    const [numToShow, setNumToShow] = useState(10);
 
-  useEffect(() => {
-    GetData();
-  }, []);
+    const [allPosts, setAllPosts] = useState(false);
+    const [page, setPage] = useState(1);
 
-  function GetData() {
-    axios
-      .get(`https://randomuser.me/api/?page=${page}&results=${numToShow}`)
-      .then(results => setAllPosts(results.data.results));
-  }
+    useEffect(() => {
+        const fetchData = async () => {
+            axios(`https://randomuser.me/api/?page=${page}&results=${numToShow}`).then(res => {
+                setAllPosts(res.data.results);
+            });
+        };
 
-  // const prev = () => {
-  //   if (page > 1) {
-  //     setPage(page -= 1);
-  //     GetData();
-  //   }
-  // }
+        fetchData();
+    }, [page, numToShow]); // Pag nagbago tong mga property na nandito sa array, 
+                            // gagawin niya tong nasa useEffect na to.
 
-  // const next = () => {
-  //   setPage(page += 1);
-  //   GetData();
-  //   console.log(page);
-  // }
+    return (
+        <div className="App">
+            <div className="col-3">
+                <select className="custom-select custom-select" value={numToShow} onChange={e => setNumToShow(e.target.value)}>
+                    {
+                        filterItems.map(value => (
+                            <option key={value.toString()} value={value}>{value}</option>
+                        ))
+                    }
+                </select>
+            </div>
 
-  // function Test(e) {
-  //   console.log(e.target.value);
-  //   setNumToShow(e.target.value);
-  //   GetData();
-  // }
+            <Table posts={allPosts} title="All Posts" />
 
-  return (
-    <div className="App">
-      <select value={itemsToShowList} onChange={e => setNumToShow(e.target.value)}>
-        {
-          itemsToShowList.map(value => (
-            <option value={itemsToShowList}>{value}</option>
-          ))
-        }
-      </select>
-      {/* <select value={itemsToShowList} onChange={(e) => Test(e)}>
-        {
-          itemsToShowList.map(value => (
-            <option value={value}>{value}</option>
-          ))
-        }
-      </select> */}
-
-      <Table posts={allPosts} title="All Posts" />
-
-      {/* <div class="d-flex">
-        <button onClick={this.prev}>left</button>
-        <p>{page}</p>
-        <button onClick={this.next}>right</button>
-      </div> */}
-    </div>
-  );
+            <ul className="pagination">
+                <li className="page-item"><a className="page-link" href="#" onClick={() => page > 1 ? setPage(page - 1) : null}>Previous</a></li>
+                <li className="page-item"><a className="page-link">{page}</a></li>
+                <li className="page-item"><a className="page-link" href="#" onClick={() => setPage(page + 1)}>Next</a></li>
+            </ul>
+        </div>
+    );
 }
 
 export default App;
